@@ -162,7 +162,7 @@ const Profile = () => {
             )}
           </div>
           <img
-            src={data[0].profile}
+            src={data[0].profile || `https://api.dicebear.com/7.x/initials/svg?seed=${data[0].firstName}+${data[0].lastName}`}
             alt="faculty profile"
             className="h-[15%] w-[15%] object-cover rounded-lg shadow-md"
           />

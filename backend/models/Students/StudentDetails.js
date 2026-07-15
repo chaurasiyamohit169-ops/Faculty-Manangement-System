@@ -33,6 +33,10 @@ const studentDetails = new mongoose.Schema({
     type: String,
     required: true,
   },
+  profile: {
+    type: String,
+    default: "",
+  },
   timestamp: {
     type: Date,
     default: Date.now,

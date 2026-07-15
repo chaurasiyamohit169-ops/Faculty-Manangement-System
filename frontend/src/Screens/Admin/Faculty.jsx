@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Heading from "../../components/Heading";
 import axios from "axios";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { storage } from "../../firebase/config";
 import { baseApiURL } from "../../baseUrl";
 import { FiSearch, FiUpload } from "react-icons/fi";
 import * as formData from 'form-data';
@@ -54,24 +52,22 @@ const Faculty = () => {
   // };
 
   useEffect(() => {
-    const convertToBase64 = (file) => {
-      toast.loading("Processing photo...");
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        toast.dismiss();
-        setFile();
-        toast.success("Profile photo loaded successfully!");
-        setData({ ...data, profile: reader.result });
-      };
-      reader.onerror = (error) => {
-        console.error(error);
-        toast.dismiss();
-        toast.error("Failed to process image!");
-      };
+    if (!file) return;
+    toast.loading("Processing photo...");
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      toast.dismiss();
+      setFile();
+      toast.success("Profile photo loaded successfully!");
+      setData((prev) => ({ ...prev, profile: reader.result }));
     };
-    file && convertToBase64(file);
-  }, [data, file]);
+    reader.onerror = (error) => {
+      console.error(error);
+      toast.dismiss();
+      toast.error("Failed to process image!");
+    };
+  }, [file]);
 
   // useEffect(() => {
   //   getBranchData();
@@ -510,8 +506,16 @@ const Faculty = () => {
               hidden
               type="file"
               id="file"
+              accept="image/*"
               onChange={(e) => setFile(e.target.files[0])}
             />
+            {data.profile && (
+              <img
+                src={data.profile}
+                alt="profile preview"
+                className="mt-2 w-24 h-24 object-cover rounded-lg border border-blue-300"
+              />
+            )}
           </div>
           <button
             type="submit"
@@ -684,8 +688,16 @@ const Faculty = () => {
                   hidden
                   type="file"
                   id="file"
+                  accept="image/*"
                   onChange={(e) => setFile(e.target.files[0])}
                 />
+                {data.profile && (
+                  <img
+                    src={data.profile}
+                    alt="profile preview"
+                    className="mt-2 w-24 h-24 object-cover rounded-lg border border-blue-300"
+                  />
+                )}
               </div>
               <button
                 type="submit"

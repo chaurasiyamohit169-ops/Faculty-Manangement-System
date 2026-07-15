@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { baseApiURL } from "../../baseUrl";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiUpload } from "react-icons/fi";
 import toast from "react-hot-toast";
 import Heading from "../../components/Heading";
 import axios from "axios";
@@ -14,7 +14,7 @@ const mailgun = new Mailgun(formData);
 const mg = mailgun.client({ username: 'api', key: `${mailgunApi()}` });
 
 const Student = () => {
-  // const [file, setFile] = useState();
+  const [file, setFile] = useState();
   const [selected, setSelected] = useState("add");
   const [students, setStudents] = useState([]);
   const [showTable, setShowTable] = useState(false);
@@ -30,9 +30,28 @@ const Student = () => {
     class: "",
     // branch: "",
     gender: "",
-    // profile: "",
+    profile: "",
   });
   const [id, setId] = useState();
+
+  useEffect(() => {
+    if (!file) return;
+    toast.loading("Processing photo...");
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      toast.dismiss();
+      setFile();
+      toast.success("Profile photo loaded successfully!");
+      setData((prev) => ({ ...prev, profile: reader.result }));
+    };
+    reader.onerror = (error) => {
+      console.error(error);
+      toast.dismiss();
+      toast.error("Failed to process image!");
+    };
+  }, [file]);
+
   // const getBranchData = () => {
   //   const headers = {
   //     "Content-Type": "application/json",
@@ -179,7 +198,7 @@ const Student = () => {
                   class: "",
                   // branch: "",
                   gender: "",
-                  // profile: "",
+                  profile: "",
                 });
               } else {
                 toast.error(response.data.message);
@@ -225,7 +244,7 @@ const Student = () => {
             class: "",
             // branch: "",
             gender: "",
-            // profile: "",
+            profile: "",
           });
         } else {
           toast.error(response.data.message);
@@ -266,7 +285,7 @@ const Student = () => {
               class: response.data.user[0].class,
               // branch: response.data.user[0].branch,
               gender: response.data.user[0].gender,
-              // profile: response.data.user[0].profile,
+              profile: response.data.user[0].profile || "",
             });
             setId(response.data.user[0]._id);
           }
@@ -350,7 +369,7 @@ const Student = () => {
 
   const setMenuHandler = (type) => {
     setSelected(type);
-    // setFile("");
+    setFile();
     setSearch("");
     setId("");
     setData({
@@ -363,7 +382,7 @@ const Student = () => {
       class: "",
       // branch: "",
       gender: "",
-      // profile: "",
+      profile: "",
     });
   };
 
@@ -530,15 +549,15 @@ const Student = () => {
               <option value="Female">Female</option>
             </select>
           </div>
-          {/* <div className="w-[40%]">
-            <label htmlFor="file" className="leading-7 text-sm ">
-              Select Profile
+          <div className="w-[40%]">
+            <label htmlFor="add-profile" className="leading-7 text-sm ">
+              Select Profile Photo
             </label>
             <label
-              htmlFor="file"
+              htmlFor="add-profile"
               className="px-2 bg-blue-50 py-3 rounded-sm text-base w-full flex justify-center items-center cursor-pointer"
             >
-              Upload
+              Upload Photo
               <span className="ml-2">
                 <FiUpload />
               </span>
@@ -546,10 +565,18 @@ const Student = () => {
             <input
               hidden
               type="file"
-              id="file"
+              id="add-profile"
+              accept="image/*"
               onChange={(e) => setFile(e.target.files[0])}
             />
-          </div> */}
+            {data.profile && (
+              <img
+                src={data.profile}
+                alt="profile preview"
+                className="mt-2 w-24 h-24 object-cover rounded-lg border border-blue-300"
+              />
+            )}
+          </div>
           <button
             type="submit"
             className="bg-blue-500 px-6 py-3 rounded-sm mb-6 text-white"
@@ -697,6 +724,34 @@ const Student = () => {
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                 </select>
+              </div>
+              <div className="w-[40%]">
+                <label htmlFor="edit-profile" className="leading-7 text-sm ">
+                  Select New Profile Photo
+                </label>
+                <label
+                  htmlFor="edit-profile"
+                  className="px-2 bg-blue-50 py-3 rounded-sm text-base w-full flex justify-center items-center cursor-pointer"
+                >
+                  Upload Photo
+                  <span className="ml-2">
+                    <FiUpload />
+                  </span>
+                </label>
+                <input
+                  hidden
+                  type="file"
+                  id="edit-profile"
+                  accept="image/*"
+                  onChange={(e) => setFile(e.target.files[0])}
+                />
+                {data.profile && (
+                  <img
+                    src={data.profile}
+                    alt="profile preview"
+                    className="mt-2 w-24 h-24 object-cover rounded-lg border border-blue-300"
+                  />
+                )}
               </div>
               <button
                 type="submit"

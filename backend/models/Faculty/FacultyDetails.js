@@ -43,7 +43,7 @@ const facultyDetails = new mongoose.Schema({
   },
   profile: {
     type: String,
-    required: true,
+    default: "",
   },
   timestamp: {
     type: Date,
