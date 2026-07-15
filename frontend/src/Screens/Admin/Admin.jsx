@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Heading from "../../components/Heading";
 import axios from "axios";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { storage } from "../../firebase/config";
 import { baseApiURL } from "../../baseUrl";
 import { FiSearch, FiUpload } from "react-icons/fi";
 import { FaFilePdf, FaFileExcel } from "react-icons/fa";
@@ -103,9 +101,9 @@ const Admin = () => {
           toast.success(response.data.message);
           const password = generateRandomPassword();
           const templateName = 'successful registration'; // Replace with the name of your Mailgun template
-          const templateData ={
+          const templateData = {
             // Define variables used in your template
-            'recipientName': data.firstName+' '+data.lastName,
+            'recipientName': data.firstName + ' ' + data.lastName,
             'username': data.employeeId,
             'password': password
           };
